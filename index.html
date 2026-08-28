@@ -1459,7 +1459,11 @@
       <h2 id="modal-title">Let's talk it through</h2>
       <p class="lede">Book a free discovery call, no pressure, just a conversation about where you are and where you want to be.</p>
 
-      <form class="modal-form" id="enquiry-form">
+      <form class="modal-form" id="enquiry-form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="dbfc991e-4bd0-410d-bad9-7b03289ef338">
+        <input type="hidden" name="subject" value="New enquiry from the Shift and Soar website">
+        <input type="hidden" name="from_name" value="Shift and Soar website">
+        <input type="checkbox" name="botcheck" style="display:none;" tabindex="-1" autocomplete="off">
         <div class="field">
           <label for="f-name">Full name</label>
           <input type="text" id="f-name" name="name" required autocomplete="name">
@@ -1722,7 +1726,15 @@
     formError.classList.remove('is-visible');
     formError.textContent = '';
 
+    // Honeypot check — if this hidden field is filled in, it was a bot, so quietly stop.
+    if (document.querySelector('#enquiry-form [name="botcheck"]').checked) {
+      return;
+    }
+
     const payload = {
+      access_key: 'dbfc991e-4bd0-410d-bad9-7b03289ef338',
+      subject: 'New enquiry from the Shift and Soar website',
+      from_name: 'Shift and Soar website',
       name: document.getElementById('f-name').value.trim(),
       email: document.getElementById('f-email').value.trim(),
       organisation: document.getElementById('f-org').value.trim(),
@@ -1734,15 +1746,15 @@
     submitBtnLabel.textContent = 'Sending';
 
     try {
-      const response = await fetch('/api/register', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(payload),
       });
       const data = await response.json().catch(() => ({}));
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong. Please try again.');
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Something went wrong. Please try again.');
       }
 
       modalFormWrap.classList.add('is-hidden');
