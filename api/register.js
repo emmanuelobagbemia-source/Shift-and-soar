@@ -47,7 +47,7 @@ const COLOR_SLATE = '#5B6570';
    Must be on a domain verified inside the Resend dashboard, or sending will
    fail. This is not a secret, so it is fine to keep in source code.
 ============================================================================ */
-const FROM_ADDRESS = 'Shift and Soar <hello@shiftandsoar.co>';
+const FROM_ADDRESS = 'Shift and Soar <onboarding@resend.dev>';
 
 // Escapes basic HTML characters so submitted text can never break the email markup.
 const safe = (value) => (value ? String(value).replace(/</g, '&lt;').replace(/>/g, '&gt;') : '');
