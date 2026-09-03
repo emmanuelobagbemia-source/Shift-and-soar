@@ -240,8 +240,10 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 300ms var(--ease-out);
+    touch-action: none;
+    overscroll-behavior: none;
   }
-  .nav-backdrop.is-open{ opacity: 1; visibility: visible; }
+  .nav-backdrop.is-open{ opacity: 1; visibility: visible; pointer-events: auto; }
 
   .menu-toggle{
     display: none;
@@ -523,12 +525,15 @@
   .story-line:nth-child(4){ margin-left: clamp(0px, 11vw, 7rem); }
 
   body.pre-entry{ overflow: hidden; height: 100%; }
+  html.menu-open{ overflow: hidden; }
   body.menu-open{
     position: fixed;
     left: 0;
     right: 0;
     width: 100%;
     overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: none;
   }
 
   /* ============ MAIN SITE REVEAL ============ */
@@ -1661,14 +1666,24 @@
   const navBackdrop = document.getElementById('nav-backdrop');
   let menuScrollY = 0;
 
+  // Blocks the underlying page from scrolling via touch while the menu is open.
+  // Touches that start inside the drawer itself are left alone, so links and
+  // any future scrollable content inside the menu keep working normally.
+  function blockScrollTouch(e){
+    if (navLinks.contains(e.target)) return;
+    e.preventDefault();
+  }
+
   function openMobileMenu(){
     menuScrollY = window.scrollY;
+    document.documentElement.classList.add('menu-open');
     document.body.classList.add('menu-open');
     document.body.style.top = `-${menuScrollY}px`;
     navLinks.classList.add('is-open');
     toggle.classList.add('is-open');
     navBackdrop.classList.add('is-open');
     toggle.setAttribute('aria-expanded', 'true');
+    document.addEventListener('touchmove', blockScrollTouch, { passive: false });
   }
 
   function closeMobileMenu(){
@@ -1676,9 +1691,11 @@
     toggle.classList.remove('is-open');
     navBackdrop.classList.remove('is-open');
     toggle.setAttribute('aria-expanded', 'false');
+    document.documentElement.classList.remove('menu-open');
     document.body.classList.remove('menu-open');
     document.body.style.top = '';
     window.scrollTo(0, menuScrollY);
+    document.removeEventListener('touchmove', blockScrollTouch);
   }
 
   toggle.addEventListener('click', () => {
