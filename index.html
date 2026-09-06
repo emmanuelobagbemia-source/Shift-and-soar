@@ -741,6 +741,31 @@
     top: clamp(1.4rem, 4vw, 2.2rem);
     left: var(--pad);
     z-index: 6;
+    transition: top 260ms var(--ease-out), left 260ms var(--ease-out), transform 260ms var(--ease-out);
+  }
+
+  /* Slide 4 only: the brand mark sits centred above the heading instead of
+     pinned top-left, so it reads as an intentional small header rather than
+     overlapping "Two ways to work together". */
+  #discover-screen:has(.slide-services-preview.is-active) .discover-logo{
+    left: 50%;
+    transform: translateX(-50%) scale(0.88);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+  }
+  .slide-services-preview{ padding-top: clamp(6rem, 15vw, 8.5rem); }
+
+  @media (max-width: 680px){
+    #discover-screen:has(.slide-services-preview.is-active) .discover-logo{
+      top: 1.1rem;
+      transform: translateX(-50%) scale(0.8);
+    }
+    .slide-services-preview{ padding-top: 6.5rem; }
+    .slide-services-preview .preview-card{ padding-top: 0.6rem; padding-bottom: 0.6rem; }
+    .slide-services-preview h2{ margin-bottom: 0.6rem !important; }
+    .slide-services-preview .slide-eyebrow{ margin-bottom: 0.6rem !important; }
+    .slide-services-preview .slide-ctas{ margin-top: 0.5rem; }
+    .slide-services-preview .wrap > div{ gap: 0.5rem !important; }
   }
 
   /* ============ SECTION SCAFFOLD ============ */
