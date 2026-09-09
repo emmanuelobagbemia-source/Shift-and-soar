@@ -516,9 +516,10 @@
     line-height: 1.14;
     letter-spacing: -0.02em;
     color: rgba(27,42,74,0.22);
-    margin-bottom: 0.3em;
+    margin-bottom: clamp(1.4rem, 5vw, 3.2rem);
     transition: color 700ms var(--ease-out);
   }
+  .story-line:last-child{ margin-bottom: 0; }
   .story-line.is-visible{ color: var(--navy); }
   .story-line em{ font-style: italic; color: var(--terracotta); }
   .story-line:nth-child(2){ margin-left: clamp(0px, 6vw, 3.5rem); }
