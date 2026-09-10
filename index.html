@@ -329,6 +329,19 @@
   }
 
   /* ============ SLIDESHOW ============ */
+  /* ---- Slide text reveal: looping typewriter heading + fade-in supporting text ---- */
+  .tw-char{ opacity: 0; transition: opacity 70ms linear; }
+  .tw-secondary{
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+  }
+  .tw-secondary.is-visible{ opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce){
+    .tw-char{ opacity: 1 !important; transition: none !important; }
+    .tw-secondary{ opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
+
   .slideshow{
     position: relative;
     height: 100dvh;
@@ -2027,6 +2040,9 @@
   function showDiscoverScreen(){
     discoverScreen.classList.add('is-visible');
     slideshowAutoplay();
+    const initialAnim = findAnimForSlide(slides[currentSlide]);
+    resetSlideAnim(initialAnim);
+    playSlideAnim(initialAnim);
   }
 
   function revealMainSite(targetSelector, openModalAfter){
@@ -2108,11 +2124,135 @@
   let slideTimer = null;
   const SLIDE_INTERVAL = 6000;
 
+  // ---- Slide text reveal: looping typewriter heading, then fade-in supporting text ----
+  const slideAnimConfigs = [
+    { slide: '.slide[data-slide="0"]', primary: '.slide-headline', before: ['.slide-eyebrow'], after: ['.slide-sub'] },
+    { slide: '.slide[data-slide="1"]', primary: '.slide-quote', before: ['.slide-eyebrow'], after: [] },
+    { slide: '.slide[data-slide="2"]', primary: '.transition-words', before: ['.slide-eyebrow'], after: [] },
+    { slide: '.slide[data-slide="3"]', primary: 'h2', before: ['.slide-eyebrow'], after: ['.wrap > div'] },
+  ];
+
+  // Wraps every non-space character of an element's text in its own span,
+  // walking through nested tags (like <em>) so their styling is preserved.
+  // Line breaks and existing markup are left completely untouched.
+  function wrapChars(el){
+    function walk(node){
+      if (node.nodeType === Node.TEXT_NODE){
+        const frag = document.createDocumentFragment();
+        for (const ch of node.textContent){
+          if (ch === ' ' || ch === '\u00A0'){
+            frag.appendChild(document.createTextNode(ch));
+          } else {
+            const span = document.createElement('span');
+            span.className = 'tw-char';
+            span.textContent = ch;
+            frag.appendChild(span);
+          }
+        }
+        node.replaceWith(frag);
+      } else if (node.nodeType === Node.ELEMENT_NODE){
+        Array.from(node.childNodes).forEach(walk);
+      }
+    }
+    Array.from(el.childNodes).forEach(walk);
+  }
+
+  const slideAnims = slideAnimConfigs.map(cfg => {
+    const slideEl = document.querySelector(cfg.slide);
+    if (!slideEl) return null;
+    const primaryEl = slideEl.querySelector(cfg.primary);
+    const beforeEls = cfg.before.map(sel => slideEl.querySelector(sel)).filter(Boolean);
+    const afterEls = cfg.after.map(sel => slideEl.querySelector(sel)).filter(Boolean);
+    if (primaryEl) wrapChars(primaryEl);
+    beforeEls.forEach(el => el.classList.add('tw-secondary'));
+    afterEls.forEach(el => el.classList.add('tw-secondary'));
+    return { slideEl, primaryEl, beforeEls, afterEls, gen: 0 };
+  }).filter(Boolean);
+
+  function findAnimForSlide(slideEl){
+    return slideAnims.find(a => a.slideEl === slideEl);
+  }
+
+  function hideSlideText(anim){
+    if (anim.primaryEl){
+      anim.primaryEl.querySelectorAll('.tw-char').forEach(c => { c.style.opacity = '0'; });
+    }
+    anim.beforeEls.forEach(el => el.classList.remove('is-visible'));
+    anim.afterEls.forEach(el => el.classList.remove('is-visible'));
+  }
+
+  // Bumping the generation counter is what actually cancels a running loop:
+  // every step of runCycle() checks it after each wait and quietly stops if
+  // it no longer matches, so at most one loop is ever live per slide.
+  function resetSlideAnim(anim){
+    if (!anim) return;
+    anim.gen += 1;
+    hideSlideText(anim);
+  }
+
+  function wait(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  const TYPE_PAUSE_AFTER_COMPLETE = 900; // brief pause once the full sentence is showing
+
+  async function runCycle(anim, myGen){
+    while (anim.gen === myGen){
+      hideSlideText(anim);
+
+      if (anim.beforeEls.length){
+        anim.beforeEls.forEach(el => el.classList.add('is-visible'));
+        await wait(260);
+        if (anim.gen !== myGen) return;
+      }
+
+      if (anim.primaryEl){
+        const chars = Array.from(anim.primaryEl.querySelectorAll('.tw-char'));
+        const perCharDelay = chars.length > 60 ? 14 : 22;
+        for (const c of chars){
+          c.style.opacity = '1';
+          await wait(perCharDelay);
+          if (anim.gen !== myGen) return;
+        }
+        await wait(120);
+        if (anim.gen !== myGen) return;
+      }
+
+      for (const el of anim.afterEls){
+        el.classList.add('is-visible');
+        await wait(120);
+        if (anim.gen !== myGen) return;
+      }
+
+      // Full sentence is now visible — hold briefly, then loop back to the top,
+      // which resets and retypes from scratch. This repeats forever until
+      // resetSlideAnim() bumps anim.gen (slide change) and this loop exits.
+      await wait(TYPE_PAUSE_AFTER_COMPLETE);
+      if (anim.gen !== myGen) return;
+    }
+  }
+
+  function playSlideAnim(anim){
+    if (!anim) return;
+    if (reducedMotion){
+      anim.beforeEls.forEach(el => el.classList.add('is-visible'));
+      if (anim.primaryEl) anim.primaryEl.querySelectorAll('.tw-char').forEach(c => { c.style.opacity = '1'; });
+      anim.afterEls.forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+    runCycle(anim, anim.gen);
+  }
+
   function goToSlide(i){
+    const outgoingAnim = findAnimForSlide(slides[currentSlide]);
     currentSlide = (i + slides.length) % slides.length;
     slides.forEach((s, idx) => s.classList.toggle('is-active', idx === currentSlide));
     dots.forEach((d, idx) => d.classList.toggle('is-active', idx === currentSlide));
     if (indexCurrent) indexCurrent.textContent = String(currentSlide + 1).padStart(2, '0');
+    if (outgoingAnim) resetSlideAnim(outgoingAnim);
+    const activeAnim = findAnimForSlide(slides[currentSlide]);
+    resetSlideAnim(activeAnim);
+    playSlideAnim(activeAnim);
   }
 
   function slideshowAutoplay(){
