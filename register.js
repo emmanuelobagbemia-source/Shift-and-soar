@@ -47,7 +47,7 @@ const COLOR_SLATE = '#5B6570';
    Must be on a domain verified inside the Resend dashboard, or sending will
    fail. This is not a secret, so it is fine to keep in source code.
 ============================================================================ */
-const FROM_ADDRESS = '"Shift & Soar" <hello@shiftandsoar.co.uk>';
+const FROM_ADDRESS = 'Shift and Soar <hello@shiftandsoar.co.uk>';
 
 // Escapes basic HTML characters so submitted text can never break the email markup.
 const safe = (value) => (value ? String(value).replace(/</g, '&lt;').replace(/>/g, '&gt;') : '');
@@ -138,37 +138,39 @@ function adminEmailHtml({ name, email, organisation, support, preferred_contact 
    the subject line or the wording below, then commit.
 ============================================================================ */
 
-const CLIENT_EMAIL_SUBJECT = () => 'Your Shift & Soar Enquiry Has Been Received';
+const CLIENT_EMAIL_SUBJECT = () => 'Thanks for reaching out to Shift and Soar';
 
-function clientEmailHtml({ name }) {
-  const firstName = safe(String(name || '').trim().split(' ')[0] || 'there');
+function clientEmailHtml({ name, organisation, support, preferred_contact }) {
+  const recapLine = (label, value) => value
+    ? `<p style="margin: 0 0 6px; font-family: Arial, sans-serif; font-size: 13px; color:${COLOR_SLATE};"><strong style="color:${COLOR_NAVY};">${safe(label)}:</strong> ${safe(value)}</p>`
+    : '';
 
   const bodyHtml = `
+    <h2 style="margin: 0 0 6px; font-weight: 400; font-size: 26px; color:${COLOR_NAVY};">Thank you, ${safe(name)}.</h2>
     <p style="margin: 0 0 20px; font-family: Arial, sans-serif; font-size: 15px; line-height: 1.7; color:${COLOR_SLATE};">
-      Hello ${firstName},
+      Your enquiry has been received, and it means a lot that you reached out. Fealicia will be in touch soon to arrange your discovery call, a free, no pressure conversation about where you are and where you want to be.
     </p>
+
+    <div style="margin: 0 0 24px; padding: 18px 20px; background:${COLOR_CREAM}; border-left: 3px solid ${COLOR_TERRACOTTA}; border-radius: 4px;">
+      <p style="margin: 0 0 8px; font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color:${COLOR_TERRACOTTA};">
+        What you shared
+      </p>
+      ${recapLine('Organisation', organisation)}
+      ${recapLine('Preferred contact', preferred_contact)}
+      ${recapLine('Support needed', support)}
+    </div>
+
     <p style="margin: 0 0 20px; font-family: Arial, sans-serif; font-size: 15px; line-height: 1.7; color:${COLOR_SLATE};">
-      Thank you for reaching out to Shift &amp; Soar.
+      In the meantime, feel free to reply directly to this email if anything else comes to mind.
     </p>
-    <p style="margin: 0 0 20px; font-family: Arial, sans-serif; font-size: 15px; line-height: 1.7; color:${COLOR_SLATE};">
-      Your enquiry has been successfully received, and we're delighted that you've taken the first step towards your leadership journey.
-    </p>
-    <p style="margin: 0 0 20px; font-family: Arial, sans-serif; font-size: 15px; line-height: 1.7; color:${COLOR_SLATE};">
-      Felicia will be in touch with you shortly to follow up on your enquiry and discuss the next steps with you.
-    </p>
-    <p style="margin: 0 0 20px; font-family: Arial, sans-serif; font-size: 15px; line-height: 1.7; color:${COLOR_SLATE};">
-      If you submitted a booking request, your request has been received and Felicia will contact you directly with any further details regarding your session.
-    </p>
-    <p style="margin: 0 0 20px; font-family: Arial, sans-serif; font-size: 15px; line-height: 1.7; color:${COLOR_SLATE};">
-      We look forward to connecting with you and supporting you as you step into leadership without losing yourself.
-    </p>
+
     <p style="margin: 28px 0 0; font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 16px; color:${COLOR_NAVY};">
-      Warmly,<br>Felicia<br>
-      <span style="font-style: normal; font-family: Arial, sans-serif; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color:${COLOR_SLATE};">Shift &amp; Soar</span>
+      Warmly,<br>Fealicia Greenland<br>
+      <span style="font-style: normal; font-family: Arial, sans-serif; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color:${COLOR_SLATE};">Founder, Shift and Soar</span>
     </p>
   `;
 
-  return emailShell({ eyebrow: 'Enquiry received', bodyHtml });
+  return emailShell({ eyebrow: 'Booking confirmation', bodyHtml });
 }
 
 /* ============================================================================
