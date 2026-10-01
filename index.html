@@ -1363,6 +1363,16 @@
     text-transform: uppercase;
     color: var(--slate-on-navy);
   }
+  .quote-block .attrib-role{
+    display: block;
+    margin-top: 0.35rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    font-size: 0.72rem;
+    color: var(--slate-on-navy);
+    opacity: 0.62;
+  }
   /* Testimonial carousel reuses the exact quote-block styling above,
      just swaps which quote is shown, so the design stays identical. */
   .testimonial-carousel{ max-width: 960px; margin: 0 auto; text-align: center; }
@@ -1722,7 +1732,6 @@
     </div>
     <div class="wrap hero-content">
       <div class="hero-copy reveal is-visible">
-        <p class="eyebrow on-navy">From your first team to your biggest one yet</p>
         <h1>Coaching for leaders at every stage</h1>
         <p class="sub">1:1 and team coaching for people stepping into a new level of leadership, and for the businesses who want them to thrive in it.</p>
         <div class="hero-ctas">
@@ -1731,12 +1740,6 @@
             <svg viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <a href="#process" class="btn btn-ghost-cream">See how it works</a>
-        </div>
-        <div class="hero-credentials">
-          <div class="credential">
-            <span class="k">Background</span>
-            <span class="v">Corporate leadership, not theory</span>
-          </div>
         </div>
       </div>
 
@@ -1805,7 +1808,7 @@
             </div>
             <div class="fact">
               <span class="k">Experience</span>
-              <span class="v">Years leading teams in corporate leadership roles</span>
+              <span class="v">22 years leading teams in corporate and institutional roles</span>
             </div>
           </div>
         </div>
@@ -1828,7 +1831,7 @@
           <div class="body">
             <p class="eyebrow on-navy">For individuals</p>
             <h3>1:1 coaching for leaders in transition</h3>
-            <p class="desc">Personalised coaching for anyone stepping into a new level of leadership, from your first direct reports to your first exec seat.</p>
+            <p class="desc">Personalised coaching for anyone stepping into a new level of leadership, from your first experience of leadership to your first exec seat.</p>
             <a href="#contact" class="btn btn-ghost-cream" data-open-modal>
               Explore 1:1 coaching
               <svg viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1938,12 +1941,12 @@
         <div class="quote-slide is-active" data-testimonial="0">
           <span class="quote-mark">&rdquo;</span>
           <p class="line">I was amazed at how you were able to open my understanding to things I wasn't seeing. After applying the action points we spoke about, I've seen a big turnaround in my life. Thank you once again.</p>
-          <p class="attrib">Tosin</p>
+          <p class="attrib">Tosin<span class="attrib-role">Business Analyst</span></p>
         </div>
         <div class="quote-slide" data-testimonial="1">
           <span class="quote-mark">&rdquo;</span>
           <p class="line">“I felt like I was brainstorming with myself. Fealicia asked the right questions that helped me to tap into the answers I already have”.</p>
-          <p class="attrib">Jamara</p>
+          <p class="attrib">Jamara<span class="attrib-role">Assistant Manager</span></p>
         </div>
         <div class="slide-dots testimonial-dots" id="testimonial-dots">
           <button class="is-active" data-goto="0" aria-label="Show testimonial 1"></button>
@@ -2017,7 +2020,7 @@
         <a href="#services">Work together</a>
         <a href="#process">Approach</a>
         <a href="#faq">FAQ</a>
-        <a href="mailto:hello@shiftandsoar.co">hello@shiftandsoar.co</a>
+        <a href="mailto:hello@shiftandsoar.co.uk">hello@shiftandsoar.co.uk</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -2600,7 +2603,7 @@
         requestAnimationFrame(() => modalThanks.classList.add('is-shown'));
       }, reducedMotion ? 0 : 260);
     } catch (err) {
-      formError.textContent = err.message || 'Something went wrong. Please try again, or email hello@shiftandsoar.co directly.';
+      formError.textContent = err.message || 'Something went wrong. Please try again, or email hello@shiftandsoar.co.uk directly.';
       formError.classList.add('is-visible');
       submitBtn.disabled = false;
       submitBtnLabel.textContent = 'Submit enquiry';
