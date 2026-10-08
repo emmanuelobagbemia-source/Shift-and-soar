@@ -964,8 +964,10 @@
   .about-facts{
     margin-top: 2.6rem;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.6rem;
+    grid-template-columns: minmax(140px, 190px) 1fr;
+    column-gap: 2.4rem;
+    row-gap: 2.6rem;
+    align-items: start;
     padding-top: 2rem;
     border-top: 1px solid var(--line-on-cream);
   }
@@ -979,6 +981,44 @@
     margin-bottom: 0.55rem;
   }
   .fact .v{ font-size: 0.95rem; color: var(--navy); font-weight: 500; }
+  .fact-experience{ grid-column: 1 / -1; }
+  /* Coaching Method: longer, structured content — treated as its own
+     small piece of editorial copy rather than a one-line fact. */
+  .method-body p{
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--navy);
+    font-weight: 400;
+    margin: 0 0 1.1rem;
+  }
+  .method-body p:last-child{ margin-bottom: 0; }
+  .method-list{
+    list-style: none;
+    margin: 1.6rem 0;
+    padding: 0;
+    display: grid;
+    gap: 1.4rem;
+  }
+  .method-list li{
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--terracotta);
+  }
+  .method-list strong{
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .method-list p{
+    font-size: 0.93rem;
+    line-height: 1.65;
+    color: var(--slate);
+    margin: 0;
+  }
 
   /* ============ SERVICES ============ */
   .services-list{ display: flex; flex-direction: column; }
@@ -1578,7 +1618,8 @@
   }
 
   @media (max-width: 680px){
-    .about-facts{ grid-template-columns: 1fr 1fr; }
+    .about-facts{ grid-template-columns: 1fr; row-gap: 2.2rem; }
+    .fact-experience{ grid-column: auto; }
     .slideshow{ min-height: 560px; }
     .slide-index{ display: none; }
   }
@@ -1804,9 +1845,23 @@
             </div>
             <div class="fact">
               <span class="k">Coaching Method</span>
-              <span class="v">Level 5 Coaching Professional Qualification</span>
+              <div class="v method-body">
+                <p>You already hold more of the answers than you think.</p>
+                <p>My job is to help you find them and then act on them. I use two approaches:</p>
+                <ul class="method-list">
+                  <li>
+                    <strong>NLP Logical Levels:</strong>
+                    <p>we look beyond what you do to who you're being, from your environment and skills right through to your beliefs, identity and purpose. That's how change lasts.</p>
+                  </li>
+                  <li>
+                    <strong>Cognitive Behavioural Coaching:</strong>
+                    <p>we spot the thoughts that hold you back and swap them for ones that move you forward, with practical tools you can use between sessions.</p>
+                  </li>
+                </ul>
+                <p>The result is clarity on what's really going on, and a clear next step to shift and soar.</p>
+              </div>
             </div>
-            <div class="fact">
+            <div class="fact fact-experience">
               <span class="k">Experience</span>
               <span class="v">22 years leading teams in corporate and institutional roles</span>
             </div>
